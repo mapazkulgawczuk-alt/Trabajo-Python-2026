@@ -433,4 +433,166 @@ def listar_atenciones():
             print(f"  Importe      : ${atencion['importe']:.2f}")
             separador_simple()
     pausar()
+    # ============================================================
+#  ESTADÍSTICAS
+# ============================================================
 
+def mostrar_estadisticas():
+    """
+    Calcula y muestra estadísticas generales del sistema.
+
+    Usa CONTADORES para:
+      - Cantidad total de mascotas y turnos
+      - Turnos según su estado (pendiente, atendido, cancelado)
+      - Frecuencia de cada servicio realizado
+
+    Usa ACUMULADORES para:
+      - Total recaudado (suma de todos los importes)
+
+    El servicio más frecuente se obtiene recorriendo
+    un diccionario auxiliar de frecuencias.
+    """
+    encabezado("ESTADÍSTICAS DEL SISTEMA")
+
+    # ── CONTADOR: Total de mascotas ──────────────────────────
+    total_mascotas = len(mascotas)          # len() cuenta los registros del archivo
+    print(f"\n  Total de mascotas registradas    : {total_mascotas}")
+
+    # ── CONTADORES: Total y estados de turnos ───────────────
+    total_turnos        = len(turnos)
+    cant_pendientes     = 0               # Contador inicializado en cero
+    cant_atendidos      = 0
+    cant_cancelados     = 0
+
+    for turno in turnos:                  # Ciclo sobre el archivo de turnos
+        if turno["estado"] == "pendiente":
+            cant_pendientes += 1          # Se incrementa el contador correspondiente
+        elif turno["estado"] == "atendido":
+            cant_atendidos  += 1
+        elif turno["estado"] == "cancelado":
+            cant_cancelados += 1
+
+    print(f"\n  Total de turnos registrados      : {total_turnos}")
+    print(f"    Pendientes                     : {cant_pendientes}")
+    print(f"    Atendidos                      : {cant_atendidos}")
+    print(f"    Cancelados                     : {cant_cancelados}")
+
+    # ── ACUMULADOR: Total recaudado ──────────────────────────
+    # ── CONTADOR DE FRECUENCIAS: Servicios ──────────────────
+    total_recaudado      = 0.0            # Acumulador inicializado en cero
+    frecuencia_servicios = {}             # Diccionario auxiliar de frecuencias
+
+    for atencion in atenciones:           # Ciclo sobre el archivo de atenciones
+        total_recaudado += atencion["importe"]   # Acumulación del importe
+
+        # Normalizar el nombre del servicio para contarlo sin distinción de mayúsculas
+        servicio = atencion["servicio"].strip().lower()
+
+        if servicio in frecuencia_servicios:
+            frecuencia_servicios[servicio] += 1       # Incrementar contador del servicio
+        else:
+            frecuencia_servicios[servicio] = 1        # Iniciar nuevo contador
+
+    print(f"\n  Total recaudado por servicios    : ${total_recaudado:.2f}")
+
+    # ── Determinar el servicio más frecuente ────────────────
+    if frecuencia_servicios:
+        # max() recorre el diccionario y encuentra el servicio con mayor conteo
+        servicio_top  = max(frecuencia_servicios, key=frecuencia_servicios.get)
+        cantidad_top  = frecuencia_servicios[servicio_top]
+        print(f"\n  Servicio más frecuente           : {servicio_top.title()}")
+        print(f"  Veces realizado                  : {cantidad_top}")
+    else:
+        print("\n  Servicio más frecuente           : Sin datos (no hay atenciones).")
+
+    separador()
+    pausar()
+
+
+# ============================================================
+#  MENÚ PRINCIPAL
+# ============================================================
+
+def mostrar_menu():
+    """Imprime el menú principal con todas las opciones disponibles."""
+    print()
+    separador()
+    print("    SISTEMA DE GESTIÓN DE VETERINARIA")
+    separador()
+    print("   1. Registrar mascota")
+    print("   2. Listar mascotas")
+    print("   3. Buscar mascota por ID")
+    print("   4. Registrar turno")
+    print("   5. Listar turnos")
+    print("   6. Actualizar estado de turno")
+    print("   7. Registrar atención médica")
+    print("   8. Listar atenciones médicas")
+    print("   9. Mostrar estadísticas")
+    print("   0. Salir")
+    separador()
+
+
+def pedir_opcion_menu():
+    """
+    Solicita al usuario que seleccione una opción del menú.
+    Valida que sea un dígito entre 0 y 9.
+    Retorna la opción como entero.
+    """
+    while True:
+        opcion = input("  Seleccione una opción: ").strip()
+        if opcion.isdigit() and 0 <= int(opcion) <= 9:
+            return int(opcion)
+        else:
+            print("  [!] Opción inválida. Ingrese un número entre 0 y 9.")
+
+
+# ============================================================
+#  FUNCIÓN PRINCIPAL
+# ============================================================
+
+def main():
+    """
+    Función principal que controla el flujo del programa.
+    Muestra el menú y ejecuta la función correspondiente
+    según la opción elegida. Repite hasta que el usuario elige salir.
+    """
+    print("\n" + "=" * 57)
+    print("  Bienvenido al Sistema de Gestión de Veterinaria  ")
+    print("=" * 57)
+
+    en_ejecucion = True                 # Variable de control del ciclo principal
+
+    while en_ejecucion:                 # Estructura repetitiva principal
+        mostrar_menu()
+        opcion = pedir_opcion_menu()
+
+        # Estructuras condicionales que dirigen a cada módulo
+        if   opcion == 1:
+            registrar_mascota()
+        elif opcion == 2:
+            listar_mascotas()
+        elif opcion == 3:
+            buscar_mascota_por_id()
+        elif opcion == 4:
+            registrar_turno()
+        elif opcion == 5:
+            listar_turnos()
+        elif opcion == 6:
+            actualizar_estado_turno()
+        elif opcion == 7:
+            registrar_atencion()
+        elif opcion == 8:
+            listar_atenciones()
+        elif opcion == 9:
+            mostrar_estadisticas()
+        elif opcion == 0:
+            print("\n  Gracias por usar el sistema. ¡Hasta pronto!\n")
+            en_ejecucion = False        # Se termina el ciclo principal
+
+
+# ============================================================
+#  PUNTO DE ENTRADA DEL PROGRAMA
+# ============================================================
+
+if __name__ == "__main__":
+    main()
