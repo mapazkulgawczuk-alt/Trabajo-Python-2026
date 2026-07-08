@@ -234,3 +234,145 @@ def registrar_mascota():
                 return numero
         except ValueError:
             print("  [!] Valor inválido. Ejemplo correcto: 1500.50")
+def listar_mascotas():
+    """
+    Recorre el archivo mascotas[] con un ciclo y muestra
+    todos los registros almacenados, campo por campo.
+    """
+    encabezado("LISTADO DE MASCOTAS REGISTRADAS")
+
+    if len(mascotas) == 0:            # Condicional: verificar si el archivo está vacío
+        print("\n  No hay mascotas registradas en el sistema.")
+    else:
+        for mascota in mascotas:      # Estructura repetitiva: recorrer cada registro
+            print(f"\n  ID: {mascota['id_mascota']}  |  Nombre: {mascota['nombre']}  "
+                  f"|  Especie: {mascota['especie']}  |  Raza: {mascota['raza']}")
+            print(f"      Edad: {mascota['edad']} año/s  |  "
+                  f"Dueño: {mascota['nombre_duenio']}  |  Tel: {mascota['telefono']}")
+            separador_simple()
+    pausar()
+
+
+def buscar_mascota_por_id():
+    """
+    Recorre el archivo mascotas[] buscando un registro
+    cuyo campo id_mascota coincida con el ID ingresado.
+    Muestra todos los campos si lo encuentra.
+    """
+    encabezado("BUSCAR MASCOTA POR ID")
+
+    id_buscado = pedir_entero_positivo("  Ingrese el ID de la mascota a buscar: ")
+
+    encontrada = False                # Bandera de control
+    for mascota in mascotas:          # Estructura repetitiva: recorrer el archivo
+        if mascota["id_mascota"] == id_buscado:   # Condicional: comparar el campo ID
+            encontrada = True
+            print(f"\n  ID Mascota   : {mascota['id_mascota']}")
+            print(f"  Nombre       : {mascota['nombre']}")
+            print(f"  Especie      : {mascota['especie']}")
+            print(f"  Raza         : {mascota['raza']}")
+            print(f"  Edad         : {mascota['edad']} año/s")
+            print(f"  Dueño        : {mascota['nombre_duenio']}")
+            print(f"  Teléfono     : {mascota['telefono']}")
+            break                     # Se encontró: salir del ciclo
+
+    if not encontrada:
+        print(f"\n  [!] No se encontró ninguna mascota con ID #{id_buscado}.")
+    pausar()
+
+
+def existe_mascota(id_mascota):
+    """
+    Función auxiliar: verifica si existe una mascota con el ID dado.
+    Retorna True si la encuentra, False si no.
+    Se usa para validar referencias cruzadas entre archivos.
+    """
+    for mascota in mascotas:
+        if mascota["id_mascota"] == id_mascota:
+            return True
+    return False
+
+
+# ============================================================
+#  FUNCIONES DE TURNOS
+# ============================================================
+
+def registrar_turno():
+    """
+    Crea un nuevo registro de turno y lo agrega al archivo turnos[].
+    Antes de registrar, valida que exista la mascota referenciada.
+    El estado inicial de todo turno es siempre 'pendiente'.
+    """
+    global contador_id_turno
+
+    encabezado("REGISTRAR NUEVO TURNO")
+
+    id_mascota = pedir_entero_positivo("  ID de la mascota: ")
+
+    # Validación de integridad: la mascota debe existir
+    if not existe_mascota(id_mascota):
+        print(f"\n  [!] No existe ninguna mascota con ID #{id_mascota}.")
+        print("      Registre primero la mascota antes de crear un turno.")
+        pausar()
+        return                        # Sale de la función sin registrar
+
+    registro = {
+        "id_turno":      contador_id_turno,
+        "id_mascota":    id_mascota,
+        "fecha":         pedir_fecha("  Fecha del turno (DD/MM/AAAA) : "),
+        "hora":          pedir_hora( "  Hora del turno  (HH:MM)      : "),
+        "tipo_consulta": pedir_texto("  Tipo de consulta (vacunación, control, cirugía, etc.): "),
+        "estado":        "pendiente", # Campo con valor predeterminado
+    }
+
+    turnos.append(registro)
+    contador_id_turno += 1
+
+    print(f"\n  [OK] Turno registrado con ID #{registro['id_turno']}. Estado: PENDIENTE.")
+    pausar()
+
+
+def listar_turnos():
+    """
+    Recorre el archivo turnos[] y muestra todos los registros.
+    Incluye todos los estados sin filtrar.
+    """
+    encabezado("LISTADO DE TURNOS")
+
+    if len(turnos) == 0:
+        print("\n  No hay turnos registrados en el sistema.")
+    else:
+        for turno in turnos:
+            print(f"\n  ID Turno: {turno['id_turno']}  |  "
+                  f"ID Mascota: {turno['id_mascota']}  |  "
+                  f"Fecha: {turno['fecha']}  |  Hora: {turno['hora']}")
+            print(f"      Tipo consulta: {turno['tipo_consulta']}  |  "
+                  f"Estado: {turno['estado'].upper()}")
+            separador_simple()
+    pausar()
+
+
+def actualizar_estado_turno():
+    """
+    Permite cambiar el campo 'estado' de un turno existente.
+    Busca el turno por ID y lo modifica directamente en el archivo.
+    """
+    encabezado("ACTUALIZAR ESTADO DE TURNO")
+
+    id_turno = pedir_entero_positivo("  ID del turno a actualizar: ")
+
+    encontrado = False
+    for turno in turnos:
+        if turno["id_turno"] == id_turno:
+            encontrado = True
+            print(f"  Estado actual   : {turno['estado'].upper()}")
+            nuevo_estado = pedir_estado_turno(
+                "  Nuevo estado (pendiente / atendido / cancelado): "
+            )
+            turno["estado"] = nuevo_estado          # Se modifica el campo directamente
+            print(f"\n  [OK] Estado del turno #{id_turno} actualizado a: {nuevo_estado.upper()}.")
+            break
+
+    if not encontrado:
+        print(f"\n  [!] No se encontró ningún turno con ID #{id_turno}.")
+    pausar()
