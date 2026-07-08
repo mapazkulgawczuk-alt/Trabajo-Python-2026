@@ -376,3 +376,61 @@ def actualizar_estado_turno():
     if not encontrado:
         print(f"\n  [!] No se encontró ningún turno con ID #{id_turno}.")
     pausar()
+# ============================================================
+#  FUNCIONES DE ATENCIÓN MÉDICA
+# ============================================================
+
+def registrar_atencion():
+    """
+    Crea un nuevo registro de atención médica y lo agrega al archivo atenciones[].
+    Valida que exista la mascota antes de registrar.
+    El campo 'importe' se acumulará en las estadísticas.
+    """
+    global contador_id_atencion
+
+    encabezado("REGISTRAR ATENCIÓN MÉDICA")
+
+    id_mascota = pedir_entero_positivo("  ID de la mascota: ")
+
+    if not existe_mascota(id_mascota):
+        print(f"\n  [!] No existe ninguna mascota con ID #{id_mascota}.")
+        print("      Registre primero la mascota.")
+        pausar()
+        return
+
+    registro = {
+        "id_atencion": contador_id_atencion,
+        "id_mascota":  id_mascota,
+        "diagnostico": pedir_texto("  Diagnóstico                     : "),
+        "tratamiento": pedir_texto("  Tratamiento indicado            : "),
+        "servicio":    pedir_texto("  Servicio realizado (vacunación, desparasitación, cirugía, etc.): "),
+        "importe":     pedir_decimal_no_negativo("  Importe cobrado ($)             : "),
+    }
+
+    atenciones.append(registro)
+    contador_id_atencion += 1
+
+    print(f"\n  [OK] Atención médica registrada con ID #{registro['id_atencion']}.")
+    pausar()
+
+
+def listar_atenciones():
+    """
+    Recorre el archivo atenciones[] y muestra todos los registros de
+    atenciones médicas almacenados, campo por campo.
+    """
+    encabezado("LISTADO DE ATENCIONES MÉDICAS")
+
+    if len(atenciones) == 0:
+        print("\n  No hay atenciones médicas registradas en el sistema.")
+    else:
+        for atencion in atenciones:
+            print(f"\n  ID Atención  : {atencion['id_atencion']}  |  "
+                  f"ID Mascota: {atencion['id_mascota']}")
+            print(f"  Diagnóstico  : {atencion['diagnostico']}")
+            print(f"  Tratamiento  : {atencion['tratamiento']}")
+            print(f"  Servicio     : {atencion['servicio']}")
+            print(f"  Importe      : ${atencion['importe']:.2f}")
+            separador_simple()
+    pausar()
+
