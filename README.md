@@ -1,6 +1,6 @@
 Sistema de Gestión para Veterinaria
 
-Le quería comentar profe que tuvimos problemas con el repositorio original. Accidentalmente borramos partes y nos quedo mal desconfigurado y lo terminamos borrando y organzando devuelta. Espero que nos pueda tener consideracion. De igual manera cada una volvio a poner su parte del codigo en el repositorio.
+Le quería comentar profe que tuvimos problemas con el repositorio original. Accidentalmente borramos partes y nos quedo mal configurado y lo terminamos borrando y organzando devuelta uno nuevo. Espero que nos pueda tener consideracion. De igual manera cada una volvio a poner su parte del codigo en el repositorio nuevo.
 Trabajo Final Integrador
 
 Materia: Algoritmos y Estructuras de Datos\
